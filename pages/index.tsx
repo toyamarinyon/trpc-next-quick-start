@@ -1,4 +1,4 @@
-// import { trpc } from "../utils/trpc";
+import { trpc } from "../utils/trpc";
 import type { NextPage } from "next";
 import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
@@ -19,7 +19,7 @@ const Home: NextPage = () => {
 
   // You should type bellow code in step 4 on walk through.
   // We're highly recommended typing below code instead of copying it.
-  // const query = trpc.useQuery(["posts", {}]);
+  const query = trpc.useQuery(["posts", {}]);
 
   function submitFilter(e: FormEvent) {
     e.preventDefault();
@@ -67,7 +67,7 @@ const Home: NextPage = () => {
         </section>
 
         <section className={styles.grid}>
-          {dummyData.map((data, i) => (
+          {query.data?.map((data, i) => (
             <article key={`article-${i}`} className={styles.card}>
               <p>{data.title}</p>
             </article>
