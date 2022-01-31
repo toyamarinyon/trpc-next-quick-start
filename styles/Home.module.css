@@ -108,9 +108,34 @@
   margin-left: 0.5rem;
 }
 
+.form {
+  max-width: 400px;
+}
+
+.form textarea {
+  width: 20rem;
+  height: 4rem;
+  border-radius: 10px;
+
+}
+.form button {
+  display: block;
+  background-color: #0070f3;
+  border: none;
+  color: white;
+  font-size: 20px;
+  width: 100%;
+  padding: 6px;
+  border-radius: 10px;
+
+}
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;
     flex-direction: column;
+  }
+  .form textarea {
+    width: 100%;
   }
 }
