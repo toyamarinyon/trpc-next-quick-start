@@ -1,3 +1,5 @@
+# tRPC Next.js Quick Starter
+
 ## 1. Defining a router
 
 Let's walk through the steps of building a typesafe API with tRPC. To start, this API will only contain two endpoints:
