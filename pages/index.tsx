@@ -1,3 +1,4 @@
+// import { trpc } from "../utils/trpc";
 import type { NextPage } from "next";
 import styles from "../styles/Home.module.css";
 
@@ -12,6 +13,9 @@ const dummyData = [
   },
 ];
 const Home: NextPage = () => {
+  // You should type bellow code in step 4 on walk through.
+  // We're highly recommended typing below code instead of copying it.
+  // const query = trpc.useQuery(["posts", {}]);
   return (
     <section className={styles.container}>
       <main className={styles.main}>
