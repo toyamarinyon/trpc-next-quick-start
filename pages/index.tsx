@@ -1,6 +1,6 @@
 // import { trpc } from "../utils/trpc";
 import type { NextPage } from "next";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 const dummyData = [
@@ -14,12 +14,21 @@ const dummyData = [
   },
 ];
 const Home: NextPage = () => {
-  const [title, setTitle] = useState();
-  const [filter, setFilter] = useState();
+  const [title, setTitle] = useState("");
+  const [filter, setFilter] = useState("");
 
   // You should type bellow code in step 4 on walk through.
   // We're highly recommended typing below code instead of copying it.
   // const query = trpc.useQuery(["posts", {}]);
+
+  function submitFilter(e: FormEvent) {
+    e.preventDefault();
+    alert(`Let's implement filter!`);
+  }
+  function submitNewPost(e: FormEvent) {
+    e.preventDefault();
+    alert(`Let's implement create post mutation`);
+  }
   return (
     <section className={styles.container}>
       <main className={styles.main}>
@@ -27,8 +36,13 @@ const Home: NextPage = () => {
           <h1>tRPC with Next.js Quick Demo 🚀</h1>
         </header>
         <section className={styles.controller}>
-          <form className={styles.filter}>
-            <input type="text" id="filter" />
+          <form className={styles.filter} onSubmit={submitFilter}>
+            <input
+              type="text"
+              id="filter"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
             <button type="submit">🔍</button>
           </form>
           <details>
@@ -39,8 +53,12 @@ const Home: NextPage = () => {
             <section className={styles.modal}>
               <div className={styles.modalContent}>
                 <h3>New Post</h3>
-                <form>
-                  <textarea id="postTitle"></textarea>
+                <form onSubmit={submitNewPost}>
+                  <textarea
+                    id="postTitle"
+                    onChange={(e) => setTitle(e.target.value)}
+                    value={title}
+                  />
                   <button type="submit">Create</button>
                 </form>
               </div>
