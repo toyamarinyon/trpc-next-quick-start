@@ -45,7 +45,7 @@ const Home: NextPage = () => {
     <section className={styles.container}>
       <main className={styles.main}>
         <header className={styles.title}>
-          <h1>tRPC with Next.js Quick Demo 🚀</h1>
+          <h1>tRPC fast hands-on 🚀</h1>
         </header>
         <section className={styles.controller}>
           <form className={styles.filter}>
