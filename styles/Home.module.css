@@ -78,6 +78,7 @@
   max-width: 800px;
   gap: 1rem;
   flex-direction: row;
+  width: 100%;
 }
 
 .card {
@@ -120,6 +121,7 @@
 
 .form {
   max-width: 400px;
+  margin-bottom: 0px;
 }
 .filter {
   display: flex;
@@ -271,6 +273,7 @@
   height: 6rem;
   padding: 0.5rem;
   margin-bottom: 1rem;
+  border-radius: 4px;
 }
 .modal button {
   display: block;
@@ -279,7 +282,8 @@
   color: white;
   font-size: 20px;
   width: 100%;
-  padding: 6px;
+  padding: 1rem;
+  font-weight: bold;;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -344,4 +348,11 @@ details[open] .modalOverlay {
 details[open] .details-modal-overlay {
   pointer-events: all;
   opacity: 0.5;
+}
+.error {
+  border: solid 1px #ff7474;
+  background-color: #ffeeee;
+  padding: 1rem;
+  border-radius: 4px;
+  color: #720404;
 }

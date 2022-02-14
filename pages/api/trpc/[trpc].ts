@@ -7,11 +7,11 @@ import { z } from "zod";
 const posts = [
   {
     id: 1,
-    title: "hello!",
+    title: "This post come from trpc router!!",
   },
   {
     id: 2,
-    title: "trpc!",
+    title: `Next, let's create a mutation!`,
   },
 ];
 
@@ -19,13 +19,14 @@ const appRouter = trpc
   .router()
   .query("posts", {
     // validate input with Zod
-    input: z.object({ id: z.number().nullish() }).nullish(),
+    input: z.object({ filter: z.string() }).nullish(),
     async resolve({ input }) {
-      // if specify input.id then we will find post matched by input.id
+      // if specify input.filter then we will find post matched by input.filter
       // else return all posts
-      return input?.id == null
-        ? posts
-        : posts.filter((post) => post.id === input.id);
+      if (input?.filter == null || input.filter == "") {
+        return posts;
+      }
+      return posts.filter((post) => post.title.includes(input.filter));
     },
   })
   .mutation("createPost", {

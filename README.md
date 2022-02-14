@@ -62,13 +62,14 @@ const posts = [
 
 const appRouter = trpc.router().query("posts", {
   // validate input with Zod
-  input: z.object({ id: z.number().nullable() }),
-  async resolve(req) {
-    // if specify input.id then we will find post matched by input.id
+  input: z.object({ filter: z.string() }).nullish(),
+  async resolve({ input }) {
+    // if specify input.filter then we will find post matched by input.filter
     // else return all posts
-    return req.input.id == null
-      ? posts
-      : posts.filter((post) => post.id === req.input.id);
+    if (input?.filter == null || input.filter == "") {
+      return posts;
+    }
+    return posts.filter((post) => post.title.includes(input.filter));
   },
 });
 
@@ -103,11 +104,11 @@ import { z } from "zod";
 const posts = [
   {
     id: 1,
-    title: "hello!",
+    title: "This post come from trpc router!",
   },
   {
     id: 2,
-    title: "trpc!",
+    title: `Next, let's create a mutation!`,
   },
 ];
 
@@ -115,13 +116,14 @@ const appRouter = trpc
   .router()
   .query("posts", {
     // validate input with Zod
-    input: z.object({ id: z.number().nullable() }),
-    async resolve(req) {
-      // if specify input.id then we will find post matched by input.id
+    input: z.object({ filter: z.string() }).nullish(),
+    async resolve({ input }) {
+      // if specify input.filter then we will find post matched by input.filter
       // else return all posts
-      return req.input.id == null
-        ? posts
-        : posts.filter((post) => post.id === req.input.id);
+      if (input?.filter == null || input.filter == "") {
+        return posts;
+      }
+      return posts.filter((post) => post.title.includes(input.filter));
     },
   })
   .mutation("createPost", {
@@ -211,89 +213,132 @@ import { trpc } from "../utils/trpc";
 And, use tRPC query hook before return statement. Again, we have already commented out and embedded that code, but here we strongly recommend typing it instead of uncommenting it.
 
 ```tsx
-// import { trpc } from "../utils/trpc";
-import type { NextPage } from "next";
-import styles from "../styles/Home.module.css";
-
-const dummyData = [
-  {
-    id: 1,
-    title: "dummy a",
-  },
-  {
-    id: 2,
-    title: "dummy b",
-  },
-];
-const Home: NextPage = () => {
-  // You should type bellow code in step 4 on walk through.
-  // We're highly recommended typing below code instead of copying it.
-  // const query = trpc.useQuery(["posts", {}]);
-  const query = trpc.userQuery(["posts", {}]); // 👈 Let's type it!
-  return (
-    <section className={styles.container}>
-      <main className={styles.main}>
-        <header className={styles.title}>
-          <h1>tRPC with Next.js Quick Demo 🚀</h1>
-        </header>
-        <h2>Posts</h2>
-        <section className={styles.grid}>
-          {dummyData.map((data, i) => (
-            <article key={`article-${i}`} className={styles.card}>
-              <p>{data.title}</p>
-            </article>
-          ))}
-        </section>
-        <h2>Add post</h2>
-        <form className={styles.form}>
-          <textarea></textarea>
-          <button>submit</button>
-        </form>
-      </main>
-    </section>
-  );
-};
-
-export default Home;
+// You should type bellow code in step 4 on walk through.
+// We're highly recommended typing below code instead of copying it.
+// const query = trpc.useQuery(["posts"]);
+const query = trpc.useQuery(["posts"]); // 👈 Let's type it!
 ```
+
 When you type `const query = trpc.useQuery(['`, I think you see `posts.all` as a candidate, is it working?
 This is possible because tRPC use router type information that we just created as the scheme for client. We're not generate file that provide scheme such as GraphQL and OpenAPI !
 
 Next, use query result instead of dummy data.
-```tsx
-import { trpc } from "../utils/trpc";
-import type { NextPage } from "next";
-import styles from "../styles/Home.module.css";
 
-const Home: NextPage = () => {
-  const query = trpc.useQuery(["posts", {}]);
-  return (
-    <section className={styles.container}>
-      <main className={styles.main}>
-        <header className={styles.title}>
-          <h1>tRPC with Next.js Quick Demo 🚀</h1>
-        </header>
-        <h2>Posts</h2>
-        <section className={styles.grid}>
-          {/* query.data is type safe query result ! */}
-          {query.data?.map((data, i) => (
-            <article key={`article-${i}`} className={styles.card}>
-              {/* data is typed { id: number, title: string } */}
-              <p>{data.title}</p>
-            </article>
-          ))}
-        </section>
-        <h2>Add post</h2>
-        <form className={styles.form}>
-          <textarea></textarea>
-          <button>submit</button>
-        </form>
-      </main>
-    </section>
-  );
-};
-
-export default Home;
+```diff
+- {dummyData.map((data, i) =>(
++ {query.data?.map((data, i) => ( // 👈 Let's type it!
+  <article key={`article-${i}`} className={styles.card}>
+    <p>{data.title}</p>
+  </article>
+))}
 ```
 
-## 5. Use mutation
+Save the all file, you should see like this.
+
+Congratulation 🎉 Next, we will create a filter with query hook.
+
+## 6. Use query variable
+
+Actually, there is a post filtering function by input.filter parameter on the server.
+
+```typescript
+// pages/api/trpc/[trpc].ts
+query("posts", {
+  // 👇 input schema
+  input: z.object({ filter: z.string() }).nullish(),
+  async resolve({ input }) {
+    if (input?.filter == null || input.filter == "") {
+      return posts;
+    }
+    // 👇 Filter posts that includes input.filter in the title
+    return posts.filter((post) => post.title.includes(input.filter));
+  },
+});
+```
+
+To use this function in hook, specify it as the first argument tuple.
+
+```typescript
+const query = trpc.useQuery(["posts", { filter: "filtering text" }]);
+//                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+There is a text field for filter, so let's set it as a query parameter.
+
+```typescript
+const query = trpc.useQuery(["posts", { filter }]);
+```
+
+It will now execute the query every time you type in the text field.
+
+## 7. Use mutation
+
+Remember, we created createPost mutation at Step 1-3.
+
+```typescript
+createPost(payload: {title: string}) => {id: string; title: string};
+```
+
+In client, we can mutate to use `useMutation` hook like that.
+
+```typescript
+const createPost = trpc.useMutation(["createPost"]);
+```
+
+Let's open `pages/index.tsx` and type this mutation. We have already commented out and embedded that code, but here we strongly recommend typing it instead of uncommenting it.
+
+```ts
+// pages/index.tsx
+
+// And, you should type following code in step 7.
+// const createPost = trpc.useMutation(['createPost']);  👈 Let's type this!
+```
+Next, let's run this hook when the user submits the form.
+Since text field value in post form is managed by `title` state, we will set to mutate param it.
+```ts
+// Text field value in post form is already managed by `title` state
+const [title, setTitle] = useState("");
+```
+
+And our code has a submit handler like this, so we will mutate there.
+```ts
+async function submitNewPost(e: FormEvent) {
+  e.preventDefault();
+  alert(`Let's implement create post mutation`);
+  // We will use following code in step 7.
+  // setError("");
+  // try {
+  //   await createPost.mutateAsync({ title });
+  // } catch (error) {
+  //   if (error instanceof TRPCClientError) {
+  //     setError(error.message);
+  //   }
+  // }
+}
+```
+Like this, remove alert function, and uncomment following code.
+```ts
+async function submitNewPost(e: FormEvent) {
+  e.preventDefault();
+  // We will use following code in step 7.
+  setError("");
+  try {
+    await createPost.mutateAsync({ title });
+  } catch (error) {
+    if (error instanceof TRPCClientError) {
+      setError(error.message);
+    }
+  }
+}
+```
+Now that we have created the Create post mutation, we can click the ✏️ button, fill in the form, and click the Create button to send the data to the server.
+
+If text that filled in is less than 5 characters long, an error message will be displayed above the form. It's provided by tRPC input validation with Zod. 
+
+It's 
+私たちは、スキーマを書いただけで、入力値の検証をするためのコードを書いていませんが、tRPCとZodがこれ実現しています。このことはまた詳しく紹介できればと思いますが、
+
+That's it for today! 
+
+
+これでmutateが実装できました！✏️ボタンを押してフォームに入力しCreateボタンを押すとサーバにデータが送信されます。入力した文字数が

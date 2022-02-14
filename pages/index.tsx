@@ -2,6 +2,7 @@ import { trpc } from "../utils/trpc";
 import type { NextPage } from "next";
 import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
+import { TRPCClientError } from "@trpc/client";
 
 const dummyData = [
   {
@@ -16,18 +17,29 @@ const dummyData = [
 const Home: NextPage = () => {
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState("");
+  const [error, setError] = useState("aaaa");
 
-  // You should type bellow code in step 4 on walk through.
-  // We're highly recommended typing below code instead of copying it.
-  const query = trpc.useQuery(["posts", {}]);
+  // You should type following code in step 4 on walk through.
+  // We're highly recommended typing following code instead of copying it.
+  // const query = trpc.useQuery(["posts"]);
+  const query = trpc.useQuery(["posts"]);
 
-  function submitFilter(e: FormEvent) {
-    e.preventDefault();
-    alert(`Let's implement filter!`);
-  }
-  function submitNewPost(e: FormEvent) {
+  // And, you should type following code in step 7.
+  // const createPost = trpc.useMutation(['createPost']);
+  const createPost = trpc.useMutation(["createPost"]);
+
+  async function submitNewPost(e: FormEvent) {
     e.preventDefault();
     alert(`Let's implement create post mutation`);
+    // We will use following code in step 7.
+    setError("");
+    try {
+      await createPost.mutateAsync({ title });
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        setError(error.message);
+      }
+    }
   }
   return (
     <section className={styles.container}>
@@ -36,7 +48,7 @@ const Home: NextPage = () => {
           <h1>tRPC with Next.js Quick Demo 🚀</h1>
         </header>
         <section className={styles.controller}>
-          <form className={styles.filter} onSubmit={submitFilter}>
+          <form className={styles.filter}>
             <input
               type="text"
               id="filter"
@@ -53,6 +65,7 @@ const Home: NextPage = () => {
             <section className={styles.modal}>
               <div className={styles.modalContent}>
                 <h3>New Post</h3>
+                {error && <p className={styles.error}>👀&nbsp;{error}</p>}
                 <form onSubmit={submitNewPost}>
                   <textarea
                     id="postTitle"
