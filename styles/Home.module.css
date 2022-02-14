@@ -130,6 +130,7 @@
   height: 40px;
   font-size: 24px;
   margin-right: 1rem;
+  margin-bottom: 0px;
 }
 .filter input {
   height: 100%;
