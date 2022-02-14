@@ -66,7 +66,7 @@ const Home: NextPage = () => {
               <div className={styles.modalContent}>
                 <h3>New Post</h3>
                 {error && <p className={styles.error}>👀&nbsp;{error}</p>}
-                <form onSubmit={submitNewPost}>
+                <form onSubmit={(e) => submitNewPost(e)}>
                   <textarea
                     id="postTitle"
                     onChange={(e) => setTitle(e.target.value)}
