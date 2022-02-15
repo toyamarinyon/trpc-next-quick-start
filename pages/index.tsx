@@ -1,8 +1,8 @@
-import { trpc } from "../utils/trpc";
+// import { trpc } from "../utils/trpc";
 import type { NextPage } from "next";
 import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
-import { TRPCClientError } from "@trpc/client";
+// import { TRPCClientError } from "@trpc/client";
 
 const dummyData = [
   {
@@ -22,24 +22,22 @@ const Home: NextPage = () => {
   // You should type following code in step 4 on walk through.
   // We're highly recommended typing following code instead of copying it.
   // const query = trpc.useQuery(["posts"]);
-  const query = trpc.useQuery(["posts"]);
 
   // And, you should type following code in step 7.
   // const createPost = trpc.useMutation(['createPost']);
-  const createPost = trpc.useMutation(["createPost"]);
 
   async function submitNewPost(e: FormEvent) {
     e.preventDefault();
     alert(`Let's implement create post mutation`);
     // We will use following code in step 7.
-    setError("");
-    try {
-      await createPost.mutateAsync({ title });
-    } catch (error) {
-      if (error instanceof TRPCClientError) {
-        setError(error.message);
-      }
-    }
+    // setError("");
+    // try {
+    //   await createPost.mutateAsync({ title });
+    // } catch (error) {
+    //   if (error instanceof TRPCClientError) {
+    //     setError(error.message);
+    //   }
+    // }
   }
   return (
     <section className={styles.container}>
@@ -80,7 +78,7 @@ const Home: NextPage = () => {
         </section>
 
         <section className={styles.grid}>
-          {query.data?.map((data, i) => (
+          {dummyData.map((data, i) => (
             <article key={`article-${i}`} className={styles.card}>
               <p>{data.title}</p>
             </article>
