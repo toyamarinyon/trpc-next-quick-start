@@ -5,7 +5,7 @@ import styles from "../styles/Home.module.css";
 const Home: NextPage = () => {
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState("");
-  const [error, setError] = useState("aaaa");
+  const [error, setError] = useState("");
 
   async function submitNewPost(e: FormEvent) {
     e.preventDefault();
