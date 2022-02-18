@@ -1,15 +1,27 @@
+import { TRPCClientError } from "@trpc/client";
 import type { NextPage } from "next";
 import { FormEvent, useState } from "react";
 import styles from "../styles/Home.module.css";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState("");
   const [error, setError] = useState("");
+  const query = trpc.useQuery(["posts", { filter }]);
+  const createPost = trpc.useMutation(["createPost"]);
 
   async function submitNewPost(e: FormEvent) {
     e.preventDefault();
-    alert(`Let's implement create post mutation`);
+    setError("");
+    try {
+      await createPost.mutateAsync({ title });
+      alert("Successfully created a post!");
+    } catch (error) {
+      if (error instanceof TRPCClientError) {
+        setError(error.message);
+      }
+    }
   }
   return (
     <section className={styles.container}>
@@ -47,6 +59,13 @@ const Home: NextPage = () => {
               </div>
             </section>
           </details>
+        </section>
+        <section className={styles.grid}>
+          {query.data?.map((data, i) => (
+            <article key={`article-${i}`} className={styles.card}>
+              <p>{data.title}</p>
+            </article>
+          ))}
         </section>
       </main>
     </section>
